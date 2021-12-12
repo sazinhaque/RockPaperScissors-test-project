@@ -9,7 +9,6 @@ contract RockPaperScissor{
     IERC20 dai = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F); //Using DAI stablecoin
 
     enum Moves {NONE, ROCK, PAPER, SCISSORS}
-    Moves public move; 
     struct Game {
         uint256 endTime;     
         address participant1;
