@@ -20,10 +20,10 @@ contract RockPaperScissor{
         Moves move;
     }
     mapping(uint256=>mapping(address=>PlayerInfo)) private idToPlayerInfo;
-    mapping (address=>bool) enrolledPlayers;
+    mapping (address=>bool) public enrolledPlayers;
     mapping (address=>bool) isPlaying;
     mapping (address=>uint256) private playerToWinnings;
-    mapping (uint256=>Game) idToGame;
+    mapping (uint256=>Game) public idToGame;
 
     event GameStart(address player1, address player2);
     event GameEnd(address indexed winner, uint256 wager, uint256 time);
@@ -36,6 +36,7 @@ contract RockPaperScissor{
         require(_wager>=0 && dai.balanceOf(msg.sender)>=_wager, "Invalid wager amount");
         _;
     }
+    
     function enroll(uint256 _amount) external {
         require(!enrolledPlayers[msg.sender], "Already enrolled");
         require(_amount>=0);
@@ -59,6 +60,7 @@ contract RockPaperScissor{
         emit GameStart(msg.sender, _against);
         return currentId;
     }
+    
     function makeMove(uint256 _id, Moves _move, uint256 _wager) external checkPlayer(_id, _move, _wager) {
         address player1 = idToGame[_id].participant1;
         address currentPlayer = msg.sender;
@@ -72,8 +74,8 @@ contract RockPaperScissor{
         }
       
         idToPlayerInfo[_id][currentPlayer].move = _move;
-
     }
+    
     function endGame(uint256 _id) external {
         require(msg.sender == idToGame[_id].participant1 || msg.sender == idToGame[_id].participant2);
         require(idToGame[_id].active && block.timestamp > idToGame[_id].endTime, "Game has not ended");
@@ -92,8 +94,8 @@ contract RockPaperScissor{
             dai.transferFrom(address(this), winner, winnings);
             emit GameEnd(winner, winnings, block.timestamp);
         }
-        
     }
+    
     function _getWinner(uint256 _id) private view returns (address) {
         address _player1 = idToGame[_id].participant1;
         address _player2 = idToGame[_id].participant2;
